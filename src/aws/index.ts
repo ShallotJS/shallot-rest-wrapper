@@ -39,13 +39,14 @@ export type TShallotHttpEvent<
   body?: TBody;
 };
 
-export interface HTTPRawResult<TResultData extends ResultDataBase = undefined> {
+export interface HTTPRawResult<TResultData extends ResultDataBase = unknown> {
   message: string;
   data?: TResultData;
 }
 
 type TShallotRESTWrapper = (
-  handler: ShallotRawHandler,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  handler: ShallotRawHandler<any, any>,
   successStatusCode?: number,
   middlewareOpts?: {
     HttpCorsOpts?: TShallotHTTPCorsOptions;

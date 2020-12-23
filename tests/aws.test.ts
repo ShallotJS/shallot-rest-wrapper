@@ -22,7 +22,7 @@ describe('REST Wrapper', () => {
   };
 
   const mockHandler: ShallotRawHandler<
-    TShallotHttpEvent,
+    TShallotHttpEvent<{ test: string }>,
     { username: string }
   > = async () => ({
     message: 'hello world',
