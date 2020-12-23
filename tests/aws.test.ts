@@ -3,7 +3,7 @@ import type { Context, APIGatewayEvent } from 'aws-lambda';
 import { test, describe, jest, expect } from '@jest/globals';
 
 import { ShallotAWSRestWrapper } from '../src';
-import type { ShallotRawHandler } from '../src/aws';
+import type { ShallotRawHandler, TShallotHttpEvent } from '../src/aws';
 
 describe('REST Wrapper', () => {
   const mockContext: Context = {
@@ -21,8 +21,14 @@ describe('REST Wrapper', () => {
     succeed: () => undefined,
   };
 
-  const mockHandler: ShallotRawHandler = async () => ({
+  const mockHandler: ShallotRawHandler<
+    TShallotHttpEvent,
+    { username: string }
+  > = async () => ({
     message: 'hello world',
+    data: {
+      username: 'bill',
+    },
   });
 
   test('Smoke test CORS default usage', async () => {

@@ -16,25 +16,19 @@ import { ShallotAWSHttpErrorHandler } from '@shallot/http-error-handler';
 import { ShallotAWSHttpJsonBodyParser } from '@shallot/http-json-body-parser';
 
 type ParsedJSON = Record<string | number | symbol, unknown>;
-export type RequestDataBase = ParsedJSON | undefined;
-export type ResultDataBase = ParsedJSON | Array<ParsedJSON> | undefined;
+export type RequestDataBase = ParsedJSON | unknown;
+export type ResultDataBase = ParsedJSON | Array<ParsedJSON> | unknown;
 
 export type ShallotRawHandler<
-  TQueryStringParameters extends RequestDataBase = undefined,
-  TPathParameters extends RequestDataBase = undefined,
-  THeaders extends RequestDataBase = undefined,
-  TBody extends RequestDataBase = undefined,
-  TResultData extends ResultDataBase = undefined
-> = Handler<
-  ShallotHttpEvent<TQueryStringParameters, TPathParameters, THeaders, TBody>,
-  HTTPRawResult<TResultData>
->;
+  TEvent extends TShallotHttpEvent = TShallotHttpEvent,
+  TResultData extends ResultDataBase = unknown
+> = Handler<TEvent, HTTPRawResult<TResultData>>;
 
-export type ShallotHttpEvent<
-  TQueryStringParameters extends RequestDataBase = undefined,
-  TPathParameters extends RequestDataBase = undefined,
-  THeaders extends RequestDataBase = undefined,
-  TBody extends RequestDataBase = undefined
+export type TShallotHttpEvent<
+  TQueryStringParameters extends RequestDataBase = unknown,
+  TPathParameters extends RequestDataBase = unknown,
+  THeaders extends RequestDataBase = unknown,
+  TBody extends RequestDataBase = unknown
 > = Omit<
   Omit<Omit<Omit<APIGatewayEvent, 'body'>, 'queryStringParameters'>, 'pathParameters'>,
   'headers'
@@ -50,20 +44,8 @@ export interface HTTPRawResult<TResultData extends ResultDataBase = undefined> {
   data?: TResultData;
 }
 
-type TShallotRESTWrapper<
-  TQueryStringParameters extends RequestDataBase = undefined,
-  TPathParameters extends RequestDataBase = undefined,
-  THeaders extends RequestDataBase = undefined,
-  TBody extends RequestDataBase = undefined,
-  TResultData extends ResultDataBase = undefined
-> = (
-  handler: ShallotRawHandler<
-    TQueryStringParameters,
-    TPathParameters,
-    THeaders,
-    TBody,
-    TResultData
-  >,
+type TShallotRESTWrapper = (
+  handler: ShallotRawHandler,
   successStatusCode?: number,
   middlewareOpts?: {
     HttpCorsOpts?: TShallotHTTPCorsOptions;
