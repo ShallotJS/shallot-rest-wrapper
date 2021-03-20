@@ -45,7 +45,7 @@
     "yarn": "^1.22.10"
   },
   "dependencies": {
-    "@shallot/http-cors": "^1.0.1",
+    "@shallot/http-cors": "^1.0.2",
     "@shallot/http-error-handler": "^1.0.2",
     "@shallot/http-json-body-parser": "^1.0.1",
     "shallot": "^1.2.2"
