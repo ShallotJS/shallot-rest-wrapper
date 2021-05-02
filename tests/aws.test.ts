@@ -1,4 +1,4 @@
-import type { Context, APIGatewayEvent } from 'aws-lambda';
+import type { Context } from 'aws-lambda';
 
 import { test, describe, jest, expect } from '@jest/globals';
 
@@ -22,7 +22,7 @@ describe('REST Wrapper', () => {
   };
 
   const mockHandler: ShallotRawHandler<
-    TShallotHttpEvent<{ test: string }>,
+    TShallotHttpEvent<{ test: string }, unknown, { Origin: string }>,
     { username: string }
   > = async () => ({
     message: 'hello world',
@@ -34,16 +34,16 @@ describe('REST Wrapper', () => {
   test('Smoke test CORS default usage', async () => {
     const wrappedHandler = ShallotAWSRestWrapper(mockHandler);
 
-    const mockEvent = ({
+    const mockEvent = {
       httpMethod: 'GET',
       headers: {
         Origin: 'https://www.example.com',
       },
-    } as unknown) as APIGatewayEvent;
+    } as unknown as TShallotHttpEvent<{ test: string }, unknown, { Origin: string }>;
     const res = await wrappedHandler(mockEvent, mockContext, jest.fn());
 
     expect(res.headers).toEqual({
-      'Access-Control-Allow-Origin': mockEvent.headers.Origin,
+      'Access-Control-Allow-Origin': '*',
     });
   });
 });

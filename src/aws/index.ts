@@ -1,16 +1,10 @@
-import type {
-  Handler,
-  APIGatewayProxyEvent,
-  APIGatewayProxyResult,
-  APIGatewayEvent,
-} from 'aws-lambda';
+import type { Handler, APIGatewayProxyResult, APIGatewayEvent } from 'aws-lambda';
 
-import type { ShallotRESTHandler } from 'shallot/dist/aws';
 import type { TShallotHTTPCorsOptions } from '@shallot/http-cors/dist/aws';
 import type { TShallotErrorHandlerOptions } from '@shallot/http-error-handler/dist/aws';
 import type { TShallotJSONBodyParserOptions } from '@shallot/http-json-body-parser/dist/aws';
 
-import ShallotAWS from 'shallot/dist/aws';
+import ShallotAWS, { ShallotAWSHandler } from '@shallot/aws';
 import { ShallotAWSHttpCors } from '@shallot/http-cors';
 import { ShallotAWSHttpErrorHandler } from '@shallot/http-error-handler';
 import { ShallotAWSHttpJsonBodyParser } from '@shallot/http-json-body-parser';
@@ -44,30 +38,23 @@ export interface HTTPRawResult<TResultData extends ResultDataBase = unknown> {
   data?: TResultData;
 }
 
-type TShallotRESTWrapper = (
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  handler: ShallotRawHandler<any, any>,
-  successStatusCode?: number,
-  middlewareOpts?: {
-    HttpCorsOpts?: TShallotHTTPCorsOptions;
-    HttpErrorHandlerOpts?: TShallotErrorHandlerOptions;
-    HttpJsonBodyParserOpts?: TShallotJSONBodyParserOptions;
-  }
-) => ShallotRESTHandler<APIGatewayProxyEvent, APIGatewayProxyResult>;
-
 /** Wraps a Serverless api function handler with middleware from
- * the Middy framework.
+ * the Shallot framework.
  *
  * @param  {Function} handler The original Serverless handler function.
  * @param  {HTTPStatusCodes} successStatusCode Optional. HTTP Status to return on success. Default 200.
  *
- * @return {Function} The Middy-fyed wrapped function handler.
+ * @return {Function} The shallot-fyed wrapped function handler.
  */
-const ShallotRESTWrapper: TShallotRESTWrapper = (
-  handler,
+const ShallotRESTWrapper = <TEvent extends TShallotHttpEvent = TShallotHttpEvent>(
+  handler: ShallotRawHandler<TEvent>,
   successStatusCode = 200,
-  middlewareOpts = {}
-) => {
+  middlewareOpts: {
+    HttpCorsOpts?: TShallotHTTPCorsOptions;
+    HttpErrorHandlerOpts?: TShallotErrorHandlerOptions;
+    HttpJsonBodyParserOpts?: TShallotJSONBodyParserOptions;
+  } = {}
+): ShallotAWSHandler<TEvent, APIGatewayProxyResult> => {
   const wrappedResponseHandler: Handler = async (...args) => {
     const res = await handler(...args);
     return {
