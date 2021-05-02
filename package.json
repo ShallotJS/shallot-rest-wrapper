@@ -1,6 +1,6 @@
 {
   "name": "@shallot/rest-wrapper",
-  "version": "1.1.3",
+  "version": "1.2.0",
   "description": "Middleware framework for serverless REST APIs",
   "keywords": [
     "typescript",
