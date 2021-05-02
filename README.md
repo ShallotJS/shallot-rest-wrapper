@@ -1,1 +1,1 @@
-# Shallot HTTP CORS Middleware
+# Shallot REST API Middleware Framework
